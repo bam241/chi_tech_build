@@ -23,7 +23,7 @@ RUN wget https://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-3.17.0.tar.gz
         CXXOPTFLAGS='-O3 -march=native -mtune=native'  \
         FOPTFLAGS='-O3 -march=native -mtune=native'  PETSC_DIR=$PWD  \
         --download-cmake
-#RUN   make test
+RUN  cd petsc-3.17.0; make -j8 && make install
 ENV PETSC_ROOT=$INSTALL_DIR
 RUN mkdir VTK;\
     cd VTK;\
@@ -33,16 +33,16 @@ RUN mkdir VTK;\
     mkdir build;\
     cd build;\
     cmake -DCMAKE_INSTALL_PREFIX=$INSTALL_DIR \
-          -DBUILD_SHARED_LIBS:BOOL=ON  \
-          -DVTK_Group_MPI:BOOL=ON  \
+          -DBUILD_SHARED_LIBS:BOOL=ON \
+          -DVTK_Group_MPI:BOOL=ON \
           -DVTK_GROUP_ENABLE_Qt=NO  \
           -DVTK_GROUP_ENABLE_Rendering=NO  \
           -DVTK_GROUP_ENABLE_Imaging=NO  \
-          -DVTK_GROUP_ENABLE_StandAlone=WANT  \
-          -DVTK_GROUP_ENABLE_Web=NO  \
-          -DVTK_BUILD_TESTING:BOOL=OFF  \
-          -DCMAKE_BUILD_TYPE=Release  \
-          -DCMAKE_CXX_FLAGS=-std=c++11  \
+          -DVTK_GROUP_ENABLE_StandAlone=WANT \
+          -DVTK_GROUP_ENABLE_Web=NO \
+          -DVTK_BUILD_TESTING:BOOL=OFF \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DCMAKE_CXX_FLAGS=-std=c++11 \
           ../ &&\
     make -j8 && make install
 ENV VTK_DIR=$INSTALL_DIR
@@ -58,11 +58,13 @@ RUN wget ftp://ftp.gnu.org/gnu/readline/readline-8.0.tar.gz;\
     make -j8 && make install
 ENV CPATH=/${INSTALL_DIR}:$CPATH
 ENV LIBRARY_PATH=${INSTALL_DIR}/lib/:/root/ncurses-6.1/chi_build/lib/:$LIBRARY_PATH
-RUN wget https://www.lua.org/ftp/lua-5.4.6.tar.gz; \
-    tar -xvf lua-5.4.6.tar.gz; \
-    cd lua-5.4.6; \
-    make linux && make local
-ENV LUA_ROOT="/root/lua-5.4.6/install"
-RUN git clone https://github.com/chi-tech/chi-tech; \
+RUN apt-get install -y lua5.3 liblua5.3-dev
+# RUN wget https://www.lua.org/ftp/lua-5.4.6.tar.gz; \
+#     tar -xvf lua-5.4.6.tar.gz; \
+#     cd lua-5.4.6; \
+#     make linux && make local
+ENV LUA_ROOT="/usr/include/lua5.3"
+RUN git clone https://github.com/bam241/chi-tech; \
     cd chi-tech; \
-    ./configure.sh
+    ./configure.sh; \
+    make -j4
