@@ -68,3 +68,4 @@ RUN git clone https://github.com/bam241/chi-tech; \
     cd chi-tech; \
     ./configure.sh; \
     make -j4
+ENV LD_LIBRARY_PATH=${INSTALL_DIR}/lib/:/root/ncurses-6.1/chi_build/lib/:$LIBRARY_PATH
